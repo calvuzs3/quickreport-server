@@ -1,0 +1,23 @@
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FILE: application.yaml  (or application.conf if using HOCON)
+#
+# Add maxRequestSize under ktor.deployment to enforce the 50MB upload limit
+# at the Ktor engine level, before the route handler is reached.
+# ─────────────────────────────────────────────────────────────────────────────
+
+ktor:
+  deployment:
+    port: 8080
+    maxRequestSize: 52428800   # 50 MB in bytes (50 * 1024 * 1024)
+
+  application:
+    modules:
+      - net.calvuz.qreport.ApplicationKt.module
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Note: the per-route size check in DocumentRoutes.kt (bytes.size > maxBytes)
+  # is a second line of defence — it catches cases where the engine limit is
+  # not enforced (e.g. unit tests, reverse proxy stripping headers).
+  # ─────────────────────────────────────────────────────────────────────────────
+ 

@@ -1,0 +1,109 @@
+# Secrets & credentials
+*.secret
+secrets.properties
+secrets.xml
+credentials.json
+auth.json
+config.local.*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Environment files (variants)
+.env.*
+*.env.local
+*.env.production
+*.env.development
+
+# Private documentation
+*_private.*
+private/
+
+# CLAUDE
+/CLAUDE*
+/.claude
+
+# Server deployment
+*.jar.original
+deploy.sh
+
+# Android Studio
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.cxx
+
+# Google Services
+google-services.json
+
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+release/
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Android Studio captures folder
+captures/
+
+# IntelliJ
+*.iml
+.idea/
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
+.cxx/
+
+# Version control
+vcs.xml
+
+# lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# Keystore files (IMPORTANTE!)
+*.jks
+*.keystore
+key.properties
+
+# OpenCV (se incluso come modulo)
+opencv/build/
+
+# Schemas for Room DB
+app/schemas/
+
+# Java pid
+java_pid*
