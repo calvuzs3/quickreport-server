@@ -9,6 +9,8 @@
 ktor:
   deployment:
     port: 8080
+    # Keep in sync by hand with SyncLimits.MAX_FILE_SIZE_BYTES in :shared —
+    # YAML can't reference a Kotlin constant.
     maxRequestSize: 52428800   # 50 MB in bytes (50 * 1024 * 1024)
 
   application:

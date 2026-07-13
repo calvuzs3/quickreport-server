@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.calvuz.qreport.repository.DocumentServerRepository
+import net.calvuz.qreport.shared.protocol.SyncLimits
 import net.calvuz.qreport.storage.DocumentStorageProvider
 import net.calvuz.qreport.storage.StorageResult
 import net.calvuz.qreport.util.DocumentHash
@@ -87,12 +88,11 @@ fun Route.documentRoutes(
             val bytes = fileBytes
                 ?: return@post call.respond(HttpStatusCode.BadRequest, "No 'file' part in multipart")
 
-            // Enforce 50MB limit
-            val maxBytes = 50L * 1024 * 1024
-            if (bytes.size > maxBytes) {
+            // Enforce shared upload limit (see :shared SyncLimits)
+            if (bytes.size > SyncLimits.MAX_FILE_SIZE_BYTES) {
                 return@post call.respond(
                     HttpStatusCode.PayloadTooLarge,
-                    "File exceeds 50MB limit (${bytes.size} bytes)"
+                    "File exceeds ${SyncLimits.MAX_FILE_SIZE_BYTES} bytes limit (${bytes.size} bytes)"
                 )
             }
 
