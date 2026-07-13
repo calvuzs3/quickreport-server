@@ -48,4 +48,7 @@ dependencies {
 
     // To sign JWT token
     implementation("com.auth0:java-jwt:4.4.0")
+
+    // KMP shared sync DTOs (composite build — see settings.gradle.kts)
+    implementation("net.calvuz:shared:0.1.0")
 }
