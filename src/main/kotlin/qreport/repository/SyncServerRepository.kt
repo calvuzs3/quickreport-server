@@ -29,9 +29,14 @@ class SyncServerRepository {
             .orderBy(IslandTypes.sortOrder)
             .map { it.toIslandTypeDto() }
 
-        val clients = Clients.selectAll()
-            .where { Clients.updatedAt greater since }
-            .map { it.toClientDto() }
+        // ── Fetch delta-filtered entities first, so we know which ancestor IDs
+        //    must be force-included below regardless of the ancestor's own
+        //    updatedAt. Without this, e.g. a client whose facility just changed
+        //    (but who wasn't itself touched recently) can be excluded from the
+        //    payload while its facility is included, crashing the Android client
+        //    on a FOREIGN KEY constraint (facilities.client_id). Same pattern
+        //    applies to facilities/contacts/contracts/documents → clients and
+        //    facilities → islands/documents. ──
 
         val contacts = Contacts.selectAll()
             .where { Contacts.updatedAt greater since }
@@ -41,11 +46,10 @@ class SyncServerRepository {
             .where { Contracts.updatedAt greater since }
             .map { it.toContractDto() }
 
-        val facilities = Facilities.selectAll()
-            .where { Facilities.updatedAt greater since }
-            .map { it.toFacilityDto() }
-
-        // Full pull — associations reference island IDs that may predate `since`
+        // Full pull — associations reference island IDs that may predate `since`.
+        // Because every island is always returned, any FK into FacilityIslands
+        // (mechanical units, maintenance logs, documents.island_id) is always safe
+        // and needs no force-inclusion logic below.
         val islands = FacilityIslands.selectAll()
             .map { it.toFacilityIslandDto() }
 
@@ -60,6 +64,33 @@ class SyncServerRepository {
         val documents = IslandDocuments.selectAll()
             .where { IslandDocuments.updatedAt greater since }
             .map { it.toDocumentDto() }
+
+        // Facilities: force-include ones referenced by an island (always fully
+        // pulled above) or a document, even if the facility itself hasn't changed.
+        val neededFacilityIds = (islands.map { it.facilityId } + documents.mapNotNull { it.facilityId }).toHashSet()
+        val facilities = if (neededFacilityIds.isEmpty())
+            Facilities.selectAll()
+                .where { Facilities.updatedAt greater since }
+                .map { it.toFacilityDto() }
+        else
+            Facilities.selectAll()
+                .where { (Facilities.updatedAt greater since) or (Facilities.id inList neededFacilityIds) }
+                .map { it.toFacilityDto() }
+
+        // Clients: force-include ones referenced by a facility, contact, contract
+        // or document, even if the client itself hasn't changed.
+        val neededClientIds = (facilities.map { it.clientId } +
+            contacts.map { it.clientId } +
+            contracts.map { it.clientId } +
+            documents.mapNotNull { it.clientId }).toHashSet()
+        val clients = if (neededClientIds.isEmpty())
+            Clients.selectAll()
+                .where { Clients.updatedAt greater since }
+                .map { it.toClientDto() }
+        else
+            Clients.selectAll()
+                .where { (Clients.updatedAt greater since) or (Clients.id inList neededClientIds) }
+                .map { it.toClientDto() }
 
         // Checkup master data — returned in full (small tables, no delta filter)
         val moduleTypes = ModuleTypes.selectAll()
