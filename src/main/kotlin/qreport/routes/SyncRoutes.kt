@@ -5,8 +5,8 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import net.calvuz.qreport.model.SyncPayload
-import net.calvuz.qreport.model.SyncResponse
+import net.calvuz.qreport.shared.dto.SyncPayloadDto
+import net.calvuz.qreport.shared.dto.SyncResponseDto
 import net.calvuz.qreport.repository.SyncServerRepository
 
 fun Route.syncRoutes(repository: SyncServerRepository) {
@@ -25,7 +25,7 @@ fun Route.syncRoutes(repository: SyncServerRepository) {
             val principal = call.principal<JWTPrincipal>()
             val isAdmin = principal?.payload?.getClaim("role")?.asString() == "ADMIN"
 
-            val incoming = call.receive<SyncPayload>()
+            val incoming = call.receive<SyncPayloadDto>()
             val acceptedIds = repository.push(incoming, isAdmin)
 
             // Pull everything changed since the LAST sync of this device,
@@ -36,7 +36,7 @@ fun Route.syncRoutes(repository: SyncServerRepository) {
             val pullPayload = repository.pull(pullSince)
 
             call.respond(
-                SyncResponse(
+                SyncResponseDto(
                     acceptedIds = acceptedIds,
                     pulledPayload = pullPayload
                 )

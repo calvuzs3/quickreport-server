@@ -6,8 +6,8 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import net.calvuz.qreport.model.LoginRequest
-import net.calvuz.qreport.model.LoginResponse
+import net.calvuz.qreport.shared.dto.LoginRequest
+import net.calvuz.qreport.shared.dto.LoginResponse
 import net.calvuz.qreport.plugins.jwtAudience
 import net.calvuz.qreport.plugins.jwtIssuer
 import net.calvuz.qreport.plugins.jwtSecret

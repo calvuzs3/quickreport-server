@@ -1,6 +1,6 @@
 package net.calvuz.qreport.repository
 
-import net.calvuz.qreport.model.*
+import net.calvuz.qreport.shared.dto.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -20,7 +20,7 @@ class SyncServerRepository {
 
     // ===== PULL — return records changed since [since] =====
 
-    fun pull(since: Long): SyncPayload = transaction {
+    fun pull(since: Long): SyncPayloadDto = transaction {
         val now = System.currentTimeMillis()
 
         // Island types are always returned in full (small table, no delta filter).
@@ -143,7 +143,7 @@ class SyncServerRepository {
                 .map { it.toPhotoDto() }
         else emptyList()
 
-        SyncPayload(
+        SyncPayloadDto(
             deviceId = "server",
             syncTimestamp = now,
             islandTypes = islandTypes,
@@ -170,7 +170,7 @@ class SyncServerRepository {
 
     // ===== PUSH — upsert incoming records =====
 
-    fun push(payload: SyncPayload, isAdmin: Boolean = false): List<String> = transaction {
+    fun push(payload: SyncPayloadDto, isAdmin: Boolean = false): List<String> = transaction {
         val acceptedIds = mutableListOf<String>()
 
         payload.islandTypes.forEach { dto ->
@@ -514,7 +514,7 @@ class SyncServerRepository {
                 it[model] = dto.model
                 it[installationDate] = dto.installationDate
                 it[warrantyExpiration] = dto.warrantyExpiration
-                it[operatingHours] = dto.operatingHours
+                it[operatingHours] = dto.operatingHours.toLong()
                 it[cycleCount] = dto.cycleCount
                 it[lastMaintenanceDate] = dto.lastMaintenanceDate
                 it[nextScheduledMaintenance] = dto.nextScheduledMaintenance
@@ -538,7 +538,7 @@ class SyncServerRepository {
                 it[model] = dto.model
                 it[installationDate] = dto.installationDate
                 it[warrantyExpiration] = dto.warrantyExpiration
-                it[operatingHours] = dto.operatingHours
+                it[operatingHours] = dto.operatingHours.toLong()
                 it[cycleCount] = dto.cycleCount
                 it[lastMaintenanceDate] = dto.lastMaintenanceDate
                 it[nextScheduledMaintenance] = dto.nextScheduledMaintenance
@@ -917,7 +917,7 @@ class SyncServerRepository {
         model = this[FacilityIslands.model],
         installationDate = this[FacilityIslands.installationDate],
         warrantyExpiration = this[FacilityIslands.warrantyExpiration],
-        operatingHours = this[FacilityIslands.operatingHours],
+        operatingHours = this[FacilityIslands.operatingHours].toInt(),
         cycleCount = this[FacilityIslands.cycleCount],
         lastMaintenanceDate = this[FacilityIslands.lastMaintenanceDate],
         nextScheduledMaintenance = this[FacilityIslands.nextScheduledMaintenance],

@@ -1,6 +1,5 @@
 package net.calvuz.qreport.repository
 
-import net.calvuz.qreport.model.MaintenanceLogDto
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SortOrder
