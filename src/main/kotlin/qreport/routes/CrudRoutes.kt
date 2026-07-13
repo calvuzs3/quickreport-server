@@ -125,12 +125,14 @@ private fun Route.clientRoutes(repo: CrudRepository) {
 
         post {
             val body = call.receive<JsonObject>().toMap()
+            validateClientData(body)?.let { return@post call.respond(HttpStatusCode.BadRequest, it) }
             call.respond(HttpStatusCode.Created, repo.upsertClient(body).toJsonObject())
         }
 
         put("/{id}") {
             val id = call.parameters["id"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val body = call.receive<JsonObject>().toMap()
+            validateClientData(body)?.let { return@put call.respond(HttpStatusCode.BadRequest, it) }
             call.respond(repo.upsertClient(body + ("id" to id)).toJsonObject())
         }
 
@@ -159,12 +161,14 @@ private fun Route.contactRoutes(repo: CrudRepository) {
 
         post {
             val body = call.receive<JsonObject>().toMap()
+            validateContactData(body)?.let { return@post call.respond(HttpStatusCode.BadRequest, it) }
             call.respond(HttpStatusCode.Created, repo.upsertContact(body).toJsonObject())
         }
 
         put("/{id}") {
             val id = call.parameters["id"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val body = call.receive<JsonObject>().toMap()
+            validateContactData(body)?.let { return@put call.respond(HttpStatusCode.BadRequest, it) }
             call.respond(repo.upsertContact(body + ("id" to id)).toJsonObject())
         }
 
@@ -227,12 +231,14 @@ private fun Route.facilityRoutes(repo: CrudRepository) {
 
         post {
             val body = call.receive<JsonObject>().toMap()
+            validateFacilityData(body)?.let { return@post call.respond(HttpStatusCode.BadRequest, it) }
             call.respond(HttpStatusCode.Created, repo.upsertFacility(body).toJsonObject())
         }
 
         put("/{id}") {
             val id = call.parameters["id"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val body = call.receive<JsonObject>().toMap()
+            validateFacilityData(body)?.let { return@put call.respond(HttpStatusCode.BadRequest, it) }
             call.respond(repo.upsertFacility(body + ("id" to id)).toJsonObject())
         }
 
@@ -261,12 +267,14 @@ private fun Route.islandRoutes(repo: CrudRepository) {
 
         post {
             val body = call.receive<JsonObject>().toMap()
+            validateIslandData(body)?.let { return@post call.respond(HttpStatusCode.BadRequest, it) }
             call.respond(HttpStatusCode.Created, repo.upsertIsland(body).toJsonObject())
         }
 
         put("/{id}") {
             val id = call.parameters["id"] ?: return@put call.respond(HttpStatusCode.BadRequest)
             val body = call.receive<JsonObject>().toMap()
+            validateIslandData(body)?.let { return@put call.respond(HttpStatusCode.BadRequest, it) }
             call.respond(repo.upsertIsland(body + ("id" to id)).toJsonObject())
         }
 
